@@ -21,9 +21,11 @@ package com.railwayteam.railways.forge;
 import com.mojang.brigadier.CommandDispatcher;
 import com.railwayteam.railways.Railways;
 import com.railwayteam.railways.RailwaysClient;
-import com.railwayteam.railways.registry.CRExtraDisplayTags;
 import com.railwayteam.railways.registry.CRParticleTypes;
-import com.simibubi.create.foundation.ModFilePackResources;
+import com.railwayteam.railways.registry.CRPonderPlugin;
+import com.simibubi.create.foundation.pack.ModFilePackResources;
+
+import net.createmod.ponder.foundation.PonderIndex;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.commands.CommandSourceStack;
@@ -59,7 +61,7 @@ public class RailwaysClientImpl {
 	}
 
 	public static void onClientSetup(FMLClientSetupEvent event) {
-		CRExtraDisplayTags.register();
+		PonderIndex.addPlugin(new CRPonderPlugin());
 	}
 
 	// region -- Client Commands ---

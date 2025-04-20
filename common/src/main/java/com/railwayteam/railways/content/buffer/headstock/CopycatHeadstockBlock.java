@@ -25,6 +25,8 @@ import com.railwayteam.railways.registry.CRShapes;
 import com.railwayteam.railways.util.AdventureUtils;
 import com.railwayteam.railways.util.client.OcclusionTestLevel;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.Create;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
 import com.simibubi.create.content.decoration.copycat.CopycatSpecialCases;
 import com.simibubi.create.content.decoration.copycat.WaterloggedCopycatBlock;
@@ -272,6 +274,14 @@ public class CopycatHeadstockBlock extends WaterloggedCopycatBlock implements Bl
 
         return InteractionResult.SUCCESS;
     }
+
+    private static void playRemoveSound(Level level, BlockPos pos) {
+		AllSoundEvents.WRENCH_REMOVE.playOnServer(level, pos, 1, Create.RANDOM.nextFloat() * .5f + .5f);
+	}
+
+	private static void playRotateSound(Level level, BlockPos pos) {
+		AllSoundEvents.WRENCH_ROTATE.playOnServer(level, pos, 1, Create.RANDOM.nextFloat() + .5f);
+	}
 
     @Nullable
     @Override

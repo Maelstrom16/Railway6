@@ -21,7 +21,7 @@ package com.railwayteam.railways.registry.commands;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.railwayteam.railways.compat.tracks.SoftIngredient;
 import com.simibubi.create.content.trains.track.TrackMaterial;
-import com.simibubi.create.foundation.utility.Components;
+import net.minecraft.network.chat.Component;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
@@ -80,7 +80,7 @@ public class TrackDemoCommand {
                         pos.move(0, 0, 1);
                     }
 
-                    ctx.getSource().sendSuccess(() -> Components.literal("Placed tracks"), true);
+                    ctx.getSource().sendSuccess(() -> Component.literal("Placed tracks"), true);
                     return 1;
                 }));
     }

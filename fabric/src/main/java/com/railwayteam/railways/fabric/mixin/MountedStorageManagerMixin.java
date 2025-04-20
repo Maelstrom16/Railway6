@@ -20,7 +20,7 @@ package com.railwayteam.railways.fabric.mixin;
 
 import com.railwayteam.railways.content.fuel.tank.FuelTankBlockEntity;
 import com.railwayteam.railways.mixin_interfaces.IFuelInventory;
-import com.simibubi.create.content.contraptions.MountedFluidStorage;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorage;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
 import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;

@@ -19,9 +19,9 @@
 package com.railwayteam.railways.forge.mixin;
 
 import com.railwayteam.railways.content.fuel.tank.FuelTankBlockEntity;
-import com.simibubi.create.content.contraptions.MountedFluidStorage;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorage;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.BlockEntity;

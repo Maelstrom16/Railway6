@@ -25,7 +25,7 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.trains.entity.TravellingPoint;
 import com.simibubi.create.foundation.block.IBE;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -94,7 +94,7 @@ public abstract class TrackSwitchBlock extends HorizontalDirectionalBlock implem
 
     @Override
     public @NotNull String getSerializedName() {
-      return Lang.asId(name());
+      return CreateLang.asId(name());
     }
 
     public boolean canSwitchTo(SwitchState next, SwitchConstraint constraint) {

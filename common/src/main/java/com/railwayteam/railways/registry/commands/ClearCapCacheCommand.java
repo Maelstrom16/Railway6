@@ -21,7 +21,7 @@ package com.railwayteam.railways.registry.commands;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.railwayteam.railways.content.conductor.ConductorCapModel;
 import com.railwayteam.railways.multiloader.Env;
-import com.simibubi.create.foundation.utility.Components;
+import net.minecraft.network.chat.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 
 import static com.railwayteam.railways.multiloader.ClientCommands.literal;
@@ -34,7 +34,7 @@ public class ClearCapCacheCommand {
         .executes(ctx -> {
           Env.CLIENT.runIfCurrent(() -> ConductorCapModel::clearModelCache);
 
-          sendSuccess(ctx.getSource(), Components.literal("cleared cap cache"));
+          sendSuccess(ctx.getSource(), Component.literal("cleared cap cache"));
           return 1;
         });
   }

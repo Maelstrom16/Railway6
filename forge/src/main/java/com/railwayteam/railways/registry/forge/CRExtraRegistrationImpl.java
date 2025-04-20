@@ -19,11 +19,13 @@
 package com.railwayteam.railways.registry.forge;
 
 import com.railwayteam.railways.registry.CRExtraRegistration;
-import com.simibubi.create.Create;
+import com.simibubi.create.api.registrate.CreateRegistrateRegistrationCallback;
+
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 
 public class CRExtraRegistrationImpl {
     public static void platformSpecificRegistration() {
-        Create.REGISTRATE.addRegisterCallback("copycat", Registries.BLOCK_ENTITY_TYPE, CRExtraRegistration::addVentAsCopycat);
+        CreateRegistrateRegistrationCallback.register(Registries.BLOCK_ENTITY_TYPE, new ResourceLocation("copycat"), CRExtraRegistration::addVentAsCopycat);
     }
 }

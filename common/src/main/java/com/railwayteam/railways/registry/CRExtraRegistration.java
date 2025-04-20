@@ -23,8 +23,8 @@ import com.railwayteam.railways.content.distant_signals.SignalDisplaySource;
 import com.railwayteam.railways.mixin.AccessorBlockEntityType;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.Create;
-import com.simibubi.create.content.redstone.displayLink.AllDisplayBehaviours;
-import com.simibubi.create.content.redstone.displayLink.DisplayBehaviour;
+// import com.simibubi.create.content.redstone.displayLink.AllDisplayBehaviours;
+// import com.simibubi.create.content.redstone.displayLink.DisplayBehaviour;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -59,10 +59,10 @@ public class CRExtraRegistration {
     }
 
     public static void addSignalSource() {
-        if (registeredSignalSource) return;
-        DisplayBehaviour signalDisplaySource = AllDisplayBehaviours.register(Create.asResource("track_signal_source"), new SignalDisplaySource());
-        AllDisplayBehaviours.assignBlock(signalDisplaySource, Create.asResource("track_signal"));
-        registeredSignalSource = true;
+        // if (registeredSignalSource) return;
+        // DisplayBehaviour signalDisplaySource = AllDisplayBehaviours.register(Create.asResource("track_signal_source"), new SignalDisplaySource());
+        // AllDisplayBehaviours.assignBlock(signalDisplaySource, Create.asResource("track_signal"));
+        // registeredSignalSource = true; // TODO: Check if this is necessary???
     }
 
     @ExpectPlatform

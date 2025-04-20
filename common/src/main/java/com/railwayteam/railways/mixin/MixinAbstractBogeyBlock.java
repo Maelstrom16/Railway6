@@ -91,8 +91,8 @@ public abstract class MixinAbstractBogeyBlock {
         }
     }
 
-    @WrapOperation(method = "getNextStyle(Lcom/simibubi/create/content/trains/bogey/BogeyStyle;)Lcom/simibubi/create/content/trains/bogey/BogeyStyle;", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/Iterate;cycleValue(Ljava/util/List;Ljava/lang/Object;)Ljava/lang/Object;"))
-    private Object wrapCycleWithFallback(List<Object> list, Object style, Operation<Object> original) {
+    @WrapOperation(method = "getNextStyle(Lcom/simibubi/create/content/trains/bogey/BogeyStyle;)Lcom/simibubi/create/content/trains/bogey/BogeyStyle;", at = @At(value = "INVOKE", target = "Lnet/createmod/catnip/data/Iterate;cycleValue(Ljava/util/List;Lcom/simibubi/create/content/trains/bogey/BogeyStyle;)Lcom/simibubi/create/content/trains/bogey/BogeyStyle;"))
+    private BogeyStyle wrapCycleWithFallback(List<BogeyStyle> list, BogeyStyle style, Operation<BogeyStyle> original) {
         try {
             return original.call(list, style);
         } catch (IllegalArgumentException e) {

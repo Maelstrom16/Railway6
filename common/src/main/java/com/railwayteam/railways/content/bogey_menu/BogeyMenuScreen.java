@@ -19,7 +19,8 @@
 package com.railwayteam.railways.content.bogey_menu;
 
 import com.google.common.collect.ImmutableList;
-import com.jozufozu.flywheel.util.transform.TransformStack;
+import dev.engine_room.flywheel.lib.transform.PoseTransformStack;
+import dev.engine_room.flywheel.lib.transform.TransformStack;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -40,14 +41,14 @@ import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.trains.bogey.AbstractBogeyBlock;
 import com.simibubi.create.content.trains.bogey.BogeySizes;
 import com.simibubi.create.content.trains.bogey.BogeyStyle;
-import com.simibubi.create.foundation.gui.AbstractSimiScreen;
+import net.createmod.catnip.gui.AbstractSimiScreen;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
-import com.simibubi.create.foundation.gui.element.GuiGameElement;
+import net.createmod.catnip.gui.element.GuiGameElement;
 import com.simibubi.create.foundation.gui.widget.*;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Pair;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.minecraft.network.chat.CommonComponents; 
+import net.createmod.catnip.data.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -116,7 +117,7 @@ public class BogeyMenuScreen extends AbstractSimiScreen {
         scrollTo(0);
 
         // Category selector START
-        Label categoryLabel = new Label(x + 14, y + 25, Components.immutableEmpty()).withShadow();
+        Label categoryLabel = new Label(x + 14, y + 25, CommonComponents.EMPTY).withShadow();
         ScrollInput categoryScrollInput = new SelectionScrollInput(x + 9, y + 20, 77, 18)
                 .forOptions(categoryComponentList)
                 .writingTo(categoryLabel)
@@ -182,12 +183,12 @@ public class BogeyMenuScreen extends AbstractSimiScreen {
         // Train casing on right side of screen where arrow is pointing START
         ms.pushPose();
 
-        TransformStack msr = TransformStack.cast(ms);
+        PoseTransformStack msr = TransformStack.of(ms);
         msr.pushPose()
                 .translate(x + background.width + 4, y + background.height + 4, 100)
                 .scale(40)
-                .rotateX(-22)
-                .rotateY(63);
+                .rotateXDegrees(-22)
+                .rotateYDegrees(63);
 
         GuiGameElement.of(AllBlocks.RAILWAY_CASING.getDefaultState()).render(guiGraphics);
 
@@ -257,7 +258,7 @@ public class BogeyMenuScreen extends AbstractSimiScreen {
                 bogeyScale = BogeyMenuManagerImpl.SIZES_TO_SCALE.get(renderPair);
             }
 
-            Block renderBlock = style.getBlockOfSize(renderSize);
+            Block renderBlock = style.getBlockForSize(renderSize);
             BlockState bogeyState = renderBlock.defaultBlockState().setValue(AbstractBogeyBlock.AXIS, Direction.Axis.Z);
             if (minecraft == null || !(renderBlock instanceof AbstractBogeyBlock<?> bogeyBlock)) return;
 
@@ -293,7 +294,7 @@ public class BogeyMenuScreen extends AbstractSimiScreen {
 
             // Render Bogey Block & Bogey
             minecraft.getBlockRenderer().renderSingleBlock(bogeyState, ms, bufferSource, light, overlay);
-            bogeyBlock.render(bogeyState, wheelAngle, ms, partialTicks, bufferSource, light, overlay, renderStyle, new CompoundTag());
+            renderStyle.render(renderSize, partialTicks, ms, bufferSource, light, overlay, wheelAngle, new CompoundTag(), bogeyState == null);
 
             // End batch, pop modelViewStack & apply and pop the pose
             bufferSource.endBatch();

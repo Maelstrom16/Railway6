@@ -18,7 +18,7 @@
 
 package com.railwayteam.railways.compat;
 
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,7 +66,7 @@ public enum Mods {
 	 * @return the mod id
 	 */
 	public String asId() {
-		return Lang.asId(name());
+		return CreateLang.asId(name());
 	}
 
 	public String asFabricId() {

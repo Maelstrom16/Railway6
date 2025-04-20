@@ -18,20 +18,29 @@
 
 package com.railwayteam.railways.mixin;
 
+import com.mojang.datafixers.util.Pair;
 import com.railwayteam.railways.mixin_interfaces.IFuelInventory;
 import com.railwayteam.railways.util.FluidUtils;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
-import com.simibubi.create.content.contraptions.MountedFluidStorage;
+import com.simibubi.create.api.contraption.storage.SyncedMountedStorage;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorage;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageType;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
-import com.simibubi.create.foundation.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,57 +52,72 @@ import java.util.Map;
 
 @Mixin(value = MountedStorageManager.class, remap = false)
 public abstract class MixinMountedStorageManager implements IFuelInventory {
+	@Unique private Map<BlockPos, MountedFluidStorage> fuelsBuilder;
+	@Unique private Map<BlockPos, SyncedMountedStorage> syncedFuelsBuilder;
+
     @Unique private CombinedTankWrapper railways$fluidFuelInventory;
     @Unique private Map<BlockPos, MountedFluidStorage> railways$fluidFuelStorage = new HashMap<>();
+    
 
-    @Inject(method = "entityTick", at = @At("TAIL"))
-    private void entityTick(AbstractContraptionEntity entity, CallbackInfo ci) {
-        railways$fluidFuelStorage.forEach((pos, mfs) -> mfs.tick(entity, pos, entity.level.isClientSide));
-    }
+    // @Inject(method = "entityTick", at = @At("TAIL"))
+    // private void entityTick(AbstractContraptionEntity entity, CallbackInfo ci) {
+    //     railways$fluidFuelStorage.forEach((pos, mfs) -> mfs.tick(entity, pos, entity.level.isClientSide));
+    // }
 
     @SuppressWarnings({"ConstantConditions"})
     @Inject(method = "addBlock", at = @At("TAIL"))
-    private void addBlock(BlockPos localPos, BlockEntity be, CallbackInfo ci) {
-        if (be != null && FluidUtils.canUseAsFuelStorage(be))
-            railways$fluidFuelStorage.put(localPos, new MountedFluidStorage(be));
+    private void addBlock(Level level, BlockState state, BlockPos globalPos, BlockPos localPos, @Nullable BlockEntity be, CallbackInfo ci) {
+        MountedFluidStorageType<?> fluidType = MountedFluidStorageType.REGISTRY.get(state.getBlock());
+		if (fluidType != null) {
+			MountedFluidStorage storage = fluidType.mount(level, state, globalPos, be);
+			if (storage != null) {
+				this.addStorage(storage, localPos);
+			}
+		}
     }
 
     @Inject(method = "read", at = @At("HEAD"))
     private void read(CompoundTag nbt, Map<BlockPos, BlockEntity> presentBlockEntities, boolean clientPacket, CallbackInfo ci) {
-        railways$fluidFuelStorage.clear();
-        NBTHelper.iterateCompoundList(nbt.getList("FluidFuelStorage", Tag.TAG_COMPOUND), c -> railways$fluidFuelStorage
-                .put(NbtUtils.readBlockPos(c.getCompound("Pos")), MountedFluidStorage.deserialize(c.getCompound("Data"))));
+        NBTHelper.iterateCompoundList(nbt.getList("fuels", Tag.TAG_COMPOUND), tag -> {
+            BlockPos pos = NbtUtils.readBlockPos(tag.getCompound("pos"));
+            CompoundTag data = tag.getCompound("storage");
+            MountedFluidStorage.CODEC.decode(NbtOps.INSTANCE, data)
+                .result()
+                .map(Pair::getFirst)
+                .ifPresent(storage -> this.addStorage(storage, pos));
+        });
     }
 
     @Inject(method = "write", at = @At("TAIL"))
     private void write(CompoundTag nbt, boolean clientPacket, CallbackInfo ci) {
-        ListTag fluidFuelStorageNBT = new ListTag();
-        for (BlockPos pos : railways$fluidFuelStorage.keySet()) {
-            CompoundTag c = new CompoundTag();
-            MountedFluidStorage mountedStorage = railways$fluidFuelStorage.get(pos);
-            if (!mountedStorage.isValid())
-                continue;
-            c.put("Pos", NbtUtils.writeBlockPos(pos));
-            c.put("Data", mountedStorage.serialize());
-            fluidFuelStorageNBT.add(c);
-        }
-
-        nbt.put("FluidFuelStorage", fluidFuelStorageNBT);
+        ListTag fuels = new ListTag();
+		railways$fluidFuelStorage.forEach((pos, storage) -> {
+				if (!clientPacket || storage instanceof SyncedMountedStorage) {
+					MountedFluidStorage.CODEC.encodeStart(NbtOps.INSTANCE, storage).result().ifPresent(encoded -> {
+						CompoundTag tag = new CompoundTag();
+						tag.put("pos", NbtUtils.writeBlockPos(pos));
+						tag.put("data", encoded);
+						fuels.add(tag);
+					});
+				}
+			}
+		);
+		if (!fuels.isEmpty()) {
+			nbt.put("fuels", fuels);
+		}
     }
 
-    @Inject(method = "removeStorageFromWorld", at = @At("TAIL"))
-    public void removeStorageFromWorld(CallbackInfo ci) {
-        railways$fluidFuelStorage.values()
-                .forEach(MountedFluidStorage::removeStorageFromWorld);
-    }
+    // @Inject(method = "removeStorage", at = @At("TAIL"))
+    // public void removeStorage(CallbackInfo ci) {
+    //     railways$fluidFuelStorage.values()
+    //             .forEach(MountedFluidStorage::removeStorage);
+    // }
 
-    @Inject(method = "addStorageToWorld", at = @At("TAIL"))
-    private void addStorageToWorld(StructureTemplate.StructureBlockInfo block, BlockEntity blockEntity, CallbackInfo ci) {
-        if (railways$fluidFuelStorage.containsKey(block.pos())) {
-            MountedFluidStorage mountedStorage = railways$fluidFuelStorage.get(block.pos());
-            if (mountedStorage.isValid())
-                mountedStorage.addStorageToWorld(blockEntity);
-        }
+    @Inject(method = "addStorage", at = @At("TAIL"))
+    private void addStorage(MountedFluidStorage storage, BlockPos pos) {
+        this.fuelsBuilder.put(pos, storage);
+		if (storage instanceof SyncedMountedStorage synced)
+			this.syncedFuelsBuilder.put(pos, synced);
     }
 
     @Override

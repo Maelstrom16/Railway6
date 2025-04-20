@@ -23,8 +23,8 @@ import com.railwayteam.railways.content.smokestack.block.DieselSmokeStackBlock;
 import com.railwayteam.railways.content.smokestack.block.be.DieselSmokeStackBlockEntity;
 import com.railwayteam.railways.registry.CRBlockPartials;
 import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -40,14 +40,14 @@ public class DieselSmokeStackRenderer extends SmartBlockEntityRenderer<DieselSmo
         super.renderSafe(be, partialTicks, ms, buffer, light, overlay);
         Direction dir = be.getBlockState().getValue(DieselSmokeStackBlock.FACING);
 
-        SuperByteBuffer byteBuffer = CachedBufferer.partial(CRBlockPartials.DIESEL_STACK_FAN, be.getBlockState());
+        SuperByteBuffer byteBuffer = CachedBuffers.partial(CRBlockPartials.DIESEL_STACK_FAN, be.getBlockState());
 
         byteBuffer.light(light);
 
         byteBuffer.translate(0.5, 0.5, 0.5)
-            .rotateX(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)
-            .rotateZ(dir.getAxis().isVertical() ? 0 : ((int) dir.toYRot()) % 360)
-            .rotateY(be.getFanRotation(be.getRpm(partialTicks)))
+            .rotateXDegrees(dir == Direction.DOWN ? 180 : dir.getAxis().isHorizontal() ? 90 : 0)
+            .rotateZDegrees(dir.getAxis().isVertical() ? 0 : ((int) dir.toYRot()) % 360)
+            .rotateYDegrees((float)be.getFanRotation(be.getRpm(partialTicks)))
             .translate(-0.5, -0.5, -0.5);
 
         byteBuffer.renderInto(ms, buffer.getBuffer(RenderType.cutout()));

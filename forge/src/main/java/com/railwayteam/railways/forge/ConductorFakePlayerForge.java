@@ -20,8 +20,7 @@ package com.railwayteam.railways.forge;
 
 import com.railwayteam.railways.Railways;
 import com.railwayteam.railways.content.conductor.ConductorEntity;
-import com.railwayteam.railways.content.conductor.IConductorHoldingFakePlayer;
-import com.simibubi.create.foundation.utility.Components;
+import com.railwayteam.railways.content.conductor.IConductorHoldingFakePlayer; 
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.Component;
@@ -64,7 +63,7 @@ public class ConductorFakePlayerForge extends FakePlayer implements IConductorHo
 	@Override
 	@NotNull
 	public Component getDisplayName() {
-		return Components.translatable(Railways.MOD_ID + "." + "conductor_name");
+		return Component.translatable(Railways.MOD_ID + "." + "conductor_name");
 	}
 
 	@Override

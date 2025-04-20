@@ -32,9 +32,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.CenteredSideValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
 import com.simibubi.create.foundation.gui.AllIcons;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.VecHelper;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
+import com.simibubi.create.foundation.utility.CreateLang;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -277,7 +277,7 @@ public class SemaphoreBlockEntity extends SmartBlockEntity implements IOverridab
 
         SearchMode(AllIcons icon) {
             this.icon = icon;
-            this.translationKey = "railways.semaphore.search_mode." + Lang.asId(name());
+            this.translationKey = "railways.semaphore.search_mode." + CreateLang.asId(name());
         }
 
         @Override

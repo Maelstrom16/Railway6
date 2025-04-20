@@ -22,7 +22,6 @@ import com.google.common.collect.ImmutableList;
 import com.railwayteam.railways.Railways;
 import com.railwayteam.railways.annotation.event.MultiLoaderEvent;
 import com.railwayteam.railways.mixin.AccessorScheduleRuntime;
-import com.railwayteam.railways.mixin_interfaces.ICustomExecutableInstruction;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.redstone.link.IRedstoneLinkable;
@@ -30,10 +29,12 @@ import com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler;
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.Train;
+import com.simibubi.create.content.trains.graph.DiscoveredPath;
 import com.simibubi.create.content.trains.schedule.ScheduleRuntime;
 import com.simibubi.create.content.trains.schedule.destination.ScheduleInstruction;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
-import com.simibubi.create.foundation.utility.*;
+import net.createmod.catnip.data.*;
+import com.simibubi.create.foundation.utility.CreateLang;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
@@ -50,7 +51,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class RedstoneLinkInstruction extends ScheduleInstruction implements ICustomExecutableInstruction {
+public class RedstoneLinkInstruction extends ScheduleInstruction {
 
     public static WorldAttached<List<CustomRedstoneActor>> customActors =
         new WorldAttached<>($ -> new ArrayList<>());
@@ -91,12 +92,12 @@ public class RedstoneLinkInstruction extends ScheduleInstruction implements ICus
     }
 
     private MutableComponent formatted() {
-        return Components.translatable("railways.schedule.instruction.redstone_link.power", intData("Power"));
+        return Component.translatable("railways.schedule.instruction.redstone_link.power", intData("Power"));
     }
 
     @Override
     public List<Component> getSecondLineTooltip(int slot) {
-        return ImmutableList.of(Lang.translateDirect(slot == 0 ? "logistics.firstFrequency" : "logistics.secondFrequency")
+        return ImmutableList.of(CreateLang.translateDirect(slot == 0 ? "logistics.firstFrequency" : "logistics.secondFrequency")
             .withStyle(ChatFormatting.RED));
     }
 
@@ -117,14 +118,14 @@ public class RedstoneLinkInstruction extends ScheduleInstruction implements ICus
     @Override
     public List<Component> getTitleAs(String type) {
         return ImmutableList.of(
-            Lang.translateDirect("schedule.condition.redstone_link.frequency_powered"),
-            Components.literal(" #1 ").withStyle(ChatFormatting.GRAY)
+            CreateLang.translateDirect("schedule.condition.redstone_link.frequency_powered"),
+            Component.literal(" #1 ").withStyle(ChatFormatting.GRAY)
                 .append(freq.getFirst()
                     .getStack()
                     .getHoverName()
                     .copy()
                     .withStyle(ChatFormatting.DARK_AQUA)),
-            Components.literal(" #2 ").withStyle(ChatFormatting.GRAY)
+            Component.literal(" #2 ").withStyle(ChatFormatting.GRAY)
                 .append(freq.getSecond()
                     .getStack()
                     .getHoverName()
@@ -163,18 +164,17 @@ public class RedstoneLinkInstruction extends ScheduleInstruction implements ICus
         builder.addScrollInput(20, 101, (si, l) -> {
             si.withRange(1, 16)
                 .withStepFunction(c -> c.shift ? 5 : 1)
-                .titled(Components.translatable("railways.schedule.instruction.redstone_link.power_edit_box"));
+                .titled(Component.translatable("railways.schedule.instruction.redstone_link.power_edit_box"));
             //l.withSuffix("%");
         }, "Power");
     }
 
     @Override
-    public void execute(ScheduleRuntime runtime) {
+    public DiscoveredPath start(ScheduleRuntime runtime, Level level) {
         Train train = ((AccessorScheduleRuntime) runtime).getTrain();
         Carriage carriage = train.carriages.get(0);
         CarriageContraptionEntity cce = carriage.anyAvailableEntity();
         if (cce != null) {
-            Level level = cce.level;
             CustomRedstoneActor actor = new CustomRedstoneActor(carriage);
             Create.REDSTONE_LINK_NETWORK_HANDLER.addToNetwork(level, actor);
             customActors.get(level).add(actor);
@@ -182,6 +182,7 @@ public class RedstoneLinkInstruction extends ScheduleInstruction implements ICus
         }
         runtime.state = ScheduleRuntime.State.PRE_TRANSIT;
         runtime.currentEntry++;
+        return null;
     }
 
     private final class CustomRedstoneActor implements IRedstoneLinkable {

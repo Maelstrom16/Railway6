@@ -38,15 +38,6 @@ public class MountedToolboxContainer extends ToolboxMenu {
     super(type, id, inv, extraData);
   }
 
-  public MountedToolboxContainer(MenuType<?> type, int id, Inventory inv, MountedToolbox toolbox) {
-    super(type, id, inv, toolbox);
-    toolbox.startOpen(player);
-  }
-
-  public static MountedToolboxContainer create(int id, Inventory inv, MountedToolbox toolbox) {
-    return new MountedToolboxContainer(CRContainerTypes.MOUNTED_TOOLBOX.get(), id, inv, toolbox);
-  }
-
   @Override
   protected void init(Inventory inv, ToolboxBlockEntity contentHolderIn) {
     super.init(inv, contentHolderIn);
